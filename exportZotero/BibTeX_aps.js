@@ -1,7 +1,7 @@
 {
-	"translatorID": "9cb70025-a888-4a29-a210-93ec52da40d4",
+	"translatorID": "1b8c6099-e38f-426f-8603-64af5e1b30e7",
 	"translatorType": 3,
-	"label": "BibTeX",
+	"label": "BibTeX (APS friendly)",
 	"creator": "Simon Kornblith, Richard Karnesky and Emiliano heyns",
 	"target": "bib",
 	"minVersion": "2.1.9",
@@ -66,7 +66,7 @@ function detectImport() {
 //%a = first listed creator surname
 //%y = year
 //%t = first word of title
-var citeKeyFormat = "%a_%t_%y";
+var citeKeyFormat = "%a:%y";
 
 var fieldMap = {
 	address:"place",
@@ -82,10 +82,10 @@ var fieldMap = {
 	shorttitle:"shortTitle",
 	url:"url",
 	doi:"DOI",
-	abstract:"abstractNote",
-  	nationality: "country",
-  	language:"language",
-  	assignee:"assignee"
+	// abstract:"abstractNote",
+	nationality: "country",
+	// language:"language",
+	assignee:"assignee"
 };
 
 // Fields for which upper case letters will be protected on export
@@ -1344,35 +1344,35 @@ function doExport() {
 			}
 		}
 
-		if(item.attachments) {
-			var attachmentString = "";
-
-			for(var i in item.attachments) {
-				var attachment = item.attachments[i];
-				// Unfortunately, it looks like \{ in file field breaks BibTeX (0.99d)
-				// even if properly backslash escaped, so we have to make sure that
-				// it doesn't make it into this field at all
-				var title = cleanFilePath(attachment.title),
-					path = null;
-
-				if(Zotero.getOption("exportFileData") && attachment.saveFile) {
-					path = cleanFilePath(attachment.defaultPath);
-					attachment.saveFile(path, true);
-				} else if(attachment.localPath) {
-					path = cleanFilePath(attachment.localPath);
-				}
-
-				if (path) {
-					attachmentString += ";" + encodeFilePathComponent(title)
-						+ ":" + encodeFilePathComponent(path)
-						+ ":" + encodeFilePathComponent(attachment.mimeType);
-				}
-			}
-
-			if(attachmentString) {
-				writeField("file", attachmentString.substr(1));
-			}
-		}
+		// if(item.attachments) {
+		// 	var attachmentString = "";
+		//
+		// 	for(var i in item.attachments) {
+		// 		var attachment = item.attachments[i];
+		// 		// Unfortunately, it looks like \{ in file field breaks BibTeX (0.99d)
+		// 		// even if properly backslash escaped, so we have to make sure that
+		// 		// it doesn't make it into this field at all
+		// 		var title = cleanFilePath(attachment.title),
+		// 			path = null;
+		//
+		// 		if(Zotero.getOption("exportFileData") && attachment.saveFile) {
+		// 			path = cleanFilePath(attachment.defaultPath);
+		// 			attachment.saveFile(path, true);
+		// 		} else if(attachment.localPath) {
+		// 			path = cleanFilePath(attachment.localPath);
+		// 		}
+		//
+		// 		if (path) {
+		// 			attachmentString += ";" + encodeFilePathComponent(title)
+		// 				+ ":" + encodeFilePathComponent(path)
+		// 				+ ":" + encodeFilePathComponent(attachment.mimeType);
+		// 		}
+		// 	}
+		//
+		// 	if(attachmentString) {
+		// 		writeField("file", attachmentString.substr(1));
+		// 	}
+		// }
 
 		Zotero.write("\n}");
 	}
