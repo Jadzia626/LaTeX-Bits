@@ -65,6 +65,7 @@ function detectImport() {
 
 //%a = first listed creator surname
 //%y = year
+//%m = month
 //%t = first word of title
 var citeKeyFormat = "%a:%y";
 
@@ -1093,9 +1094,18 @@ var citeKeyConversions = {
 	},
 	"t":function (flags, item) {
 		if (item["title"]) {
-			return item["title"].toLowerCase().replace(citeKeyTitleBannedRe, "").split(/\s+/g)[0];
+			return item["title"].toLowerCase().replace(citeKeyTitleBannedRe, "").split(/[\s+|\-+]/g)[0];
 		}
 		return "notitle";
+	},
+	"m":function (flags, item) {
+		if(item.date) {
+			var date = Zotero.Utilities.strToDate(item.date);
+			if(numberRe.test(date.month)) {
+				return date.month+1;
+			}
+		}
+		return 0;
 	},
 	"y":function (flags, item) {
 		if(item.date) {
@@ -1104,7 +1114,7 @@ var citeKeyConversions = {
 				return date.year;
 			}
 		}
-		return "nodate";
+		return "noyear";
 	}
 }
 
@@ -1149,6 +1159,15 @@ function buildCiteKey (item,citekeys) {
 	basekey = tidyAccents(basekey);
 	basekey = basekey.replace(citeKeyCleanRe, "");
 	var citekey = basekey;
+	// Add characters first
+	var addkey = "abcdefghijklmnopqrstuvwxyz";
+	var c = 0;
+	while(citekeys[citekey]) {
+		citekey = basekey + addkey[c];
+		c++;
+		if(c >= 26) break;
+	}
+	// If unsuccessful, try numbers
 	var i = 0;
 	while(citekeys[citekey]) {
 		i++;
